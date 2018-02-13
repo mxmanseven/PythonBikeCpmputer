@@ -5,7 +5,7 @@ import time
 import pdb
 from TimeService import TimeService
 from Route import Route
-
+import sys
 
 def main():
 	r = Route()
@@ -16,8 +16,11 @@ def main():
 
 	r.CalculatePossibles()
 
-	print("printPossiables")
 	r.printPossables()
+
+	pace = r.getPaceSecondsFromPossableAndMile(0.1, 1)
+	# sys.stdout.write(r.getPaceSecondsFromPossableAndMile(0.1, 0.5))
+	# sys.stdout.write(r.getPaceSecondsFromPossableAndMile(0.1, 1.5))
 	
 	
 

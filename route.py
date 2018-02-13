@@ -54,7 +54,29 @@ class Route:
                     minute += interval.minutes
                     p = SpeedInterval(re.speed, mile, minute)
                     self.Possibles.append(p)
+            if re.routeType == RouteType.MiliageReset:
+                # knh todo - what is the time we shold arrive at the end mile at?
+                # I think it is the same as the start time
+                r = SpeedInterval(None, re.startMile, re.endMile)
+                self.Possibles.append(r)
             i += 1
+
+    def getPaceSecondsFromPossableAndMile(self, mile, minute):
+        # given the current mile, get the next possable
+        # for the speed find determine what the ontime minute is
+        # return the dirrerence of the ontime minute and the actual minute
+        i = 0
+        nextPossible = None
+        for p in self.Possibles:
+            i += 1
+            nextPossible = p
+            if p.miles >= mile:
+                break
+        lastPossable = self.Possibles[i-1]
+        milesPastLastPossable = mile - lastPossable.miles
+        expectedMinute = ((milesPastLastPossable / lastPossable.speed) * 60) + lastPossable.minutes
+        pace = expectedMinute - minute
+        return pace
 
     def printPossables(self):
         for p in self.Possibles:

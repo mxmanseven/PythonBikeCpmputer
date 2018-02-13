@@ -12,4 +12,7 @@ class SpeedInterval:
         pass
 
     def printMe(self):
-        sys.stdout.write(str(self.speed) + " " + str(self.miles) + " " + str(self.minutes) + "\r\n")
+        try:
+            sys.stdout.write(str(self.speed) + " " + str(self.miles) + " " + str(self.minutes) + "\r\n")
+        except:
+            pass
