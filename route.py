@@ -1,5 +1,5 @@
 # holds a collection of route objects
-
+import sys
 from RouteTypes import RouteType
 from RouteEntry import RouteEntry
 from SpeedInterval import SpeedInterval
@@ -13,7 +13,8 @@ class Route:
         self.Routes = []
         self.Possibles = []
         self.SpeedIntervals = []
-        self.buildIntervalTable(100)
+        self.MaxSpeed = 100
+        self.buildIntervalTable(self.MaxSpeed)
 
     def AddSpeed(self, startMile, speed):
         endMile = None
@@ -37,37 +38,59 @@ class Route:
                 # knh tood check if last route is a 
                 # knownControl or EndBy.
                 # for now, just add 10 miles to last route
-                next = self.Routes[i]
-                next.endMile += 10
+                next = RouteEntry(re.startMile + 10, None, None, None)
             # Add Possibles
             # for speed entries, get interval
             # to add possiables
             if(re.routeType == RouteType.SpeedChange):
-                pass
+                endMile = next.startMile
+                startMile = re.startMile
+                interval = self.getIntervalBySpeed(re.speed)
+                minute = 0
+                mile = startMile
+                while mile < endMile:
+                    mile = round(mile + interval.miles, 1)
+                    #how do we deal with start mile?
+                    minute += interval.minutes
+                    p = SpeedInterval(re.speed, mile, minute)
+                    self.Possibles.append(p)
+            i += 1
+
+    def printPossables(self):
+        for p in self.Possibles:
+            p.printMe()
 
     def  getIntervalBySpeed(self, speed):
-        pass
+        # looks the mile and minute interval by current speed
+        if isinstance(speed, (long, int)):
+            return self.SpeedIntervals[speed - 1]
+        if speed > self.MaxSpeed:
+            return "getInterValBySpeed() failed: speed >" + str(speed) + "< cannot be greater than MaxSpeed."
+        return None
 
     def buildIntervalTable(self, maxSpeed):
+        # build a list of intervals from 1 to maxSpeed, speed is the index 
+        # A valid interval has milage with a whole tenth and a whole minute
+        sys.stdout.write('Route::buildIntervalTable()')
         self.SpeedIntervals = []
         for speed in range(1, maxSpeed):
             si = self.getInterval(speed)
             if(si != None):
-                self.SpeedIntervals.append(si)
-
-                
+                self.SpeedIntervals.append(si)                
     
     def getInterval(self, speed):
-        for i in range(1, 100):
-            distance = i / 10.0
-            timeHours = distance / speed
-            timeMinutes = timeHours * 60
-            if timeMinutes % 1 < 0.000001:
-                # knh todo - round to whole minute
-                si = SpeedInterval(speed, distance, timeMinutes)
-                si.printMe()
-                return si
-        return None
+        try:
+            sys.stdout.write('Route::getInterval()\r\n')
+            for i in range(1, 100):
+                distance = i / 10.0
+                timeHours = distance / speed
+                timeMinutes = timeHours * 60
+                if timeMinutes % 1 < 0.000001:
+                    si = SpeedInterval(speed, distance, int(round(timeMinutes)))
+                    si.printMe()
+                    return si
+        except:
+            return None
     
 
 
