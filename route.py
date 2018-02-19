@@ -17,17 +17,21 @@ class Route:
         self.buildIntervalTable(self.MaxSpeed)
 
     def AddSpeed(self, startMile, speed):
+        # Add Speed route with start mile and new speed
         endMile = None
         self.Routes.append(RouteEntry(startMile, endMile, speed, RouteType.SpeedChange))
         
     def AddReset(self, startMile, endMile):
+        # add a reset to the route with start mile and end mile
         speed = None
         self.Routes.append(RouteEntry(startMile, endMile, speed, RouteType.MiliageReset))
 
     def CalculatePossibles(self):
+        # Builds a set of all possiables for all speeds and resets
         # reset Possibles
         # for each speed, look up distance and minute interval 
         # add possibles while mile is less than next rout start mile
+        #knh todo - how should resets be hanled? Mybe they already are?
         self.Possibles = []
         i = 0
         while i < len(self.Routes):
@@ -62,6 +66,8 @@ class Route:
             i += 1
 
     def getPaceSecondsFromPossableAndMile(self, mile, minute):
+        # When you are behind or slow, pace is negative.
+        # When you are early / fase, pace is positive.
         # given the current mile, get the next possable
         # for the speed find determine what the ontime minute is
         # return the dirrerence of the ontime minute and the actual minute
@@ -74,15 +80,19 @@ class Route:
                 break
         lastPossable = self.Possibles[i-1]
         milesPastLastPossable = mile - lastPossable.miles
-        expectedMinute = ((milesPastLastPossable / lastPossable.speed) * 60) + lastPossable.minutes
-        pace = expectedMinute - minute
-        return pace
+        expectedMinute = (((milesPastLastPossable / lastPossable.speed) * 60) 
+            + lastPossable.minutes)
+        minutesFromPace = minute - expectedMinute
+        return minutesFromPace * 60
 
     def printPossables(self):
         for p in self.Possibles:
             p.printMe()
 
     def  getIntervalBySpeed(self, speed):
+        # Given a speed, finds the possable interval:
+        # Distance must be evenaly divisable by 0.1
+        # Minute must be whole
         # looks the mile and minute interval by current speed
         if isinstance(speed, (long, int)):
             return self.SpeedIntervals[speed - 1]

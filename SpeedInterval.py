@@ -1,6 +1,8 @@
 import sys
 
 class SpeedInterval:
+    # A valid speed interval has a whole minute
+    # and distance divisable by 0.1.
     def __init__(self, speed, miles, minutes):
         self.speed = speed
         self.miles = miles
