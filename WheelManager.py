@@ -48,15 +48,18 @@ class WheelManager:
         # get the last ticks that are newer than seconds back
         recientTicks = []
         now = self.timeService.CurrentTime()
-        minArrivalTime = now - secondsBack
+        minArrivalTime = now - float(secondsBack)
+        # start at the end then work back
         i = self.validTickCount - 1
         keepLooking = True
         while (keepLooking):
             arrival = self.validTicks[i]
-            if (arrival > minArrivalTimer):
+            if (arrival > minArrivalTime):
                 recientTicks.append(arrival)
             else:
                 keepLooking = False
+            if (i == 0): keepLooking = False
+            i -= 1
 
     def getAverageSpeed(self):
         pass
