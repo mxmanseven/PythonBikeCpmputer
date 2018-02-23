@@ -7,10 +7,11 @@ from TimeService import TimeService
 from Route import Route
 import sys
 from WheelManager import WheelManager
+from LcdManager import LcdManager
 
 #  download the repository and run python setup.py install to install it into your Python package directory.
 #  https://gist.github.com/DenisFromHR/cc863375a6e19dce359d
-from RPLCD.i2c import CharLCD
+#from RPLCD.i2c import CharLCD
 
 def testRoute():
 	r = Route()
@@ -41,23 +42,48 @@ def testRoute():
 	pace = r.getPaceSecondsFromPossableAndMile(0.15, 2)
 	sys.stdout.write(str(pace) + "\r\n")
 
-def lcdTest():
-	lcd = CharLCD('PCF8574', 0x27)
-	#                 12345678911234567892    
-	lcd.write_string('mm.mm    MM:ss    rs')
-	lcd.write_string('PaceSecon: +ss AS ')
-	lcd.write_string('123456789112345678CS')
-	lcd.write_string('123456789112345678AS')
-	#lcd.write_string('BBBBBBBBAAAAAAAAAA')
-	sys.stdout.write('wrote hello world to lcd\r\n')
-	time.sleep(5)
-	#lcd.clear()	
+# def lcdTest1():
+# 	lcd = CharLCD('PCF8574', 0x27)
+# 	#                 12345678911234567892    
+# 	lcd.write_string('D12.34   P+15:35  RS')
+# 	lcd.write_string('                  AS')
+# 	lcd.write_string('T 09:00   NP 1.5  CS')
+# 	lcd.write_string('BBBBBBBBB  AAAAAAAAA')
+# 	sys.stdout.write('wrote hello world to lcd\r\n')
+# 	time.sleep(5)
+	
+# #def lcdTest2():
+# 	#                 12345678911234567892    
+# 	lcd.write_string('D12.34   P-00:35  12')
+# 	lcd.write_string('                  10')
+# 	lcd.write_string('T 55:23   NP 0.5  11')
+# 	lcd.write_string('BB                  ')
+# 	sys.stdout.write('wrote hello world to lcd\r\n')
+# 	time.sleep(5)	
+
+# #def lcdTest3():
+# 	#                 12345678911234567892    
+# 	lcd.write_string('D12.35  P-04:21  12')
+# 	lcd.write_string('                  8')
+# 	lcd.write_string('T 56:41  NP 0.1   7')
+# 	lcd.write_string('BBBBBBBBB          ')
+# 	sys.stdout.write('wrote hello world to lcd\r\n')
+# 	time.sleep(5)
 
 def main():
 	# sys.stdout.write(r.getPaceSecondsFromPossableAndMile(0.1, 0.5))
 	# sys.stdout.write(r.getPaceSecondsFromPossableAndMile(0.1, 1.5))
+	line1 = "D{:5.2f}   P+{:5.2f}  {:2.0f}\r\n".format(2.3, 3.4, 12.67)
+	sys.stdout.write(line1)
+	line = "{:5.2f}\r\n".format(12.34)
+	sys.stdout.write(line)
+	line = "{:5.2f}\r\n".format(0.01)
+	sys.stdout.write(line)
 
-	lcdTest()
+	lcdM = LcdManager()
+	lcdM.setEnduroScreen(1.34, 90, 12, 11, 6, 0.1, 12)
+
+	#lcdTest1()
 
 	# wm = WheelManager(2)
 
