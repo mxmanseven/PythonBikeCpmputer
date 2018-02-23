@@ -34,35 +34,48 @@ class Route:
         #knh todo - how should resets be hanled? Mybe they already are?
         self.Possibles = []
         i = 0
+        minute = 0
         while i < len(self.Routes):
-            re = self.Routes[i]
+            routeElement = self.Routes[i]
             if i + 1 < len(self.Routes):
                 next = self.Routes[i+1]
             else:                
                 # knh tood check if last route is a 
                 # knownControl or EndBy.
                 # for now, just add 10 miles to last route
-                next = RouteEntry(re.startMile + 10, None, None, None)
+                next = RouteEntry(routeElement.startMile + 10, None, None, None)
             # Add Possibles
             # for speed entries, get interval
             # to add possiables
-            if(re.routeType == RouteType.SpeedChange):
+            if(routeElement.routeType == RouteType.SpeedChange):
                 endMile = next.startMile
-                startMile = re.startMile
-                interval = self.getIntervalBySpeed(re.speed)
-                minute = 0
+                startMile = routeElement.startMile
+                interval = self.getIntervalBySpeed(routeElement.speed)
                 mile = startMile
                 while mile < endMile:
                     mile = round(mile + interval.miles, 1)
                     #how do we deal with start mile?
                     minute += interval.minutes
-                    p = SpeedInterval(re.speed, mile, minute)
+                    p = SpeedInterval(routeElement.speed, mile, minute)
                     self.Possibles.append(p)
-            if re.routeType == RouteType.MiliageReset:
+            elif routeElement.routeType == RouteType.MiliageReset:
                 # knh todo - what is the time we shold arrive at the end mile at?
                 # I think it is the same as the start time
-                r = SpeedInterval(None, re.startMile, re.endMile)
+                r = SpeedInterval(None, routeElement.startMile, routeElement.endMile)
                 self.Possibles.append(r)
+            elif routeElement.routeType == RouteType.KnownControl:
+                # knh todo  remove previous three miles of possibles
+                initialMile = next.startMile
+                endMile = initialMile - 3
+                keepGoing = True
+                while (keepGoing):
+                    possiblCount = len(self.Possibles)
+                    lastPossibleMile = self.Possibles[possiblCount - 1]
+                    if (lastPossibleMile > endMile):
+                        self.Possibles.pop()
+                    else:
+                        keepGoing = False
+
             i += 1
 
     def getPaceSecondsFromPossableAndMile(self, mile, minute):
@@ -71,11 +84,10 @@ class Route:
         # given the current mile, get the next possable
         # for the speed find determine what the ontime minute is
         # return the dirrerence of the ontime minute and the actual minute
+        # knh todo - handle no possible found
         i = 0
-        nextPossible = None
         for p in self.Possibles:
             i += 1
-            nextPossible = p
             if p.miles >= mile:
                 break
         lastPossable = self.Possibles[i-1]

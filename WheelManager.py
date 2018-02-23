@@ -18,7 +18,7 @@ class WheelManager:
         # arrival time is based off of the timeService time
         self.validTicks = []
 
-    def getCurrentSpeed(self):
+    def getSpeed(self, durrationSeconds=2, average=False):
         # Need at least two points of distance and time (ticks) to find speed
         # Need max time window to consider for determining speed
         # Lets look back at the last two seconds for any ticks
@@ -26,15 +26,20 @@ class WheelManager:
         # if theire is one tick in the last two seconds then speed 
         #  is 1 rotation per 2 seconds extended to mph by wheel size
         # if mpre than one tick in last tow seconds, the find speed = d / t
-        maxSecondsBack = 2
+        # durrationSeconds is needed because we get one tick per wheel rev 
+        # and for a 21" wheel, one rev each two seconds is about 5 mph
+        # when average is trur, will reutrn the average across durrationSeconds
+        maxSecondsBack = durrationSeconds
         lastArrivals = self.getLastTicksByTime(maxSecondsBack)
         lastArrivalCount = len(lastArrivals)
         if (lastArrivalCount == 0):
             return 0
         elif (lastArrivalCount == 1):
             #knh todo - do math to find speed at 1 rev per maxSecondsBack
+            #  feet  per second (constant) => mph
             return (self.wheelCircumferenceFeet / maxSecondsBack) * 0.681818
         elif (lastArrivalCount > 1):
+            #knh todo - handle average case
             # get last two arrivals, find time span, find speed
             length = len(lastArrivals)
             last = lastArrivals[length - 1]
@@ -61,10 +66,9 @@ class WheelManager:
             if (i == 0): keepLooking = False
             i -= 1
 
-    def getAverageSpeed(self):
-        pass
 
     def getTotalDistance(self):
+        # knh todo - keep track of both ground miles and route miles 
         return  self.validTickCount * self.wheelCircumferenceFeet  
 
     def newRawTick(self):
