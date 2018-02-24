@@ -73,12 +73,12 @@ def testRoute():
 def main():
 	# sys.stdout.write(r.getPaceSecondsFromPossableAndMile(0.1, 0.5))
 	# sys.stdout.write(r.getPaceSecondsFromPossableAndMile(0.1, 1.5))
-	line1 = "D{:5.2f}   P+{:5.2f}  {:2.0f}\r\n".format(2.3, 3.4, 12.67)
-	sys.stdout.write(line1)
-	line = "{:5.2f}\r\n".format(12.34)
-	sys.stdout.write(line)
-	line = "{:5.2f}\r\n".format(0.01)
-	sys.stdout.write(line)
+	# line1 = "D{:5.2f}   P+{:5.2f}  {:2.0f}\r\n".format(2.3, 3.4, 12.67)
+	# sys.stdout.write(line1)
+	# line = "{:5.2f}\r\n".format(12.34)
+	# sys.stdout.write(line)
+	# line = "{:5.2f}\r\n".format(0.01)
+	# sys.stdout.write(line)
 
 	lcdM = LcdManager()
 	lcdM.setEnduroScreen(1.34, 90, 12, 11, 6, 0.1, 12)

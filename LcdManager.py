@@ -1,82 +1,73 @@
 
 #  download the repository and run python setup.py install to install it into your Python package directory.
 #  https://gist.github.com/DenisFromHR/cc863375a6e19dce359d
-# from RPLCD.i2c import CharLCD
+from RPLCD.i2c import CharLCD
 
 import sys
 from math import ceil, floor
 
-# class LcdManager:
+class LcdManager:
 
-    # def __init__(self):
-	    # self.lcd = CharLCD('PCF8574', 0x27)
+    def __init__(self):
+		self.lcd = CharLCD('PCF8574', 0x27)
 
-    #def setEnduroScreen(self, distance, paceSeconds, routeSpeed, averageSpeed,time, milesToNextPossable, currentSpeed):
-    
-distance = 1
-paceTotalSeconds = 6
-routeSpeed = 12
-averageSpeed = 11
-timeTotalSeconds = 65
-milesToNextPossable = 0.1
-currentSpeed = 12
-paceMinutes = int(paceTotalSeconds / 60)
-paceSeconds = paceTotalSeconds % 60
+    def setEnduroScreen(self, distance, paceTotalSeconds, routeSpeed, averageSpeed,timeTotalSeconds, milesToNextPossable, currentSpeed):
+		paceMinutes = int(paceTotalSeconds / 60)
+		paceSeconds = paceTotalSeconds % 60
 
-line1 = ("D{:5.2f}  P{: >+3d}:{:02d}  {:2.0f}\r\n".format(distance, paceMinutes, paceSeconds, routeSpeed))
+		line1 = ("D{:5.2f}  P{: >+3d}:{:02d}  {:2.0f}\r\n".format(distance, paceMinutes, paceSeconds, routeSpeed))
 
-line2 = "{:19.0f}\r\n".format(averageSpeed)
+		line2 = "{:19.0f}\r\n".format(averageSpeed)
 
-timeMinutes = int(round(timeTotalSeconds / 60))
-timeSeconds = timeTotalSeconds % 60
-line3 = "T {:.0f}:{:02d} {:12.0f}\r\n".format(timeMinutes, timeSeconds, currentSpeed)
+		timeMinutes = int(round(timeTotalSeconds / 60))
+		timeSeconds = timeTotalSeconds % 60
+		line3 = "T {:.0f}:{:02d} {:12.0f}\r\n".format(timeMinutes, timeSeconds, currentSpeed)
 
-# knh todo - get rounding correct 
+		# knh todo - get rounding correct 
 
-# always round away from zero
-if paceTotalSeconds > 0:
-  paceMarkerCount = int(abs(ceil(paceTotalSeconds / 15)))
-else:
-  paceMarkerCount = int(abs(floor(paceTotalSeconds / 15)))
+		# always round away from zero
+		if paceTotalSeconds > 0:
+			paceMarkerCount = int(abs(ceil(paceTotalSeconds / 15)))
+		else:
+			paceMarkerCount = int(abs(floor(paceTotalSeconds / 15)))
 
-# We will display at most 9 pace chars
-if paceMarkerCount > 9:
-  paceMarkerCount = 9
-# we have 20 chars, those that are not pace markers are spaces
-paddCharCount = 20 - paceMarkerCount
+		# We will display at most 9 pace chars
+		if paceMarkerCount > 9:
+			paceMarkerCount = 9
+		# we have 20 chars, those that are not pace markers are spaces
+			paddCharCount = 20 - paceMarkerCount
 
-# if we are ahead with positive paceTotalSeconds, use A
-# if we are behaind with negative paceTotalSeconds, use B
-if paceTotalSeconds > 0: 
-  paceMarkerChar = "A"
-else:
-  paceMarkerChar = "B"
+		# if we are ahead with positive paceTotalSeconds, use A
+		# if we are behaind with negative paceTotalSeconds, use B
+		if paceTotalSeconds > 0: 
+			paceMarkerChar = "A"
+		else:
+			paceMarkerChar = "B"
 
-paceString = ""
+		paceString = ""
 
-# build correct length pace String
-for i in range(1, paceMarkerCount):
-  paceString += paceMarkerChar
-  
-# build correct length padd string and place it on the correct side
-if paceTotalSeconds > 0:
-  paddString = ""
-  for i in range(1, paddCharCount):
-    paddString += " "
-  paceString = paddString + paceString
-  
+		# build correct length pace String
+		for i in range(1, paceMarkerCount):
+			paceString += paceMarkerChar
 
-line4 = paceString +  "\r\n"
+		# build correct length padd string and place it on the correct side
+		if paceTotalSeconds > 0:
+			paddString = ""
+		for i in range(1, paddCharCount):
+			paddString += " "
+		paceString = paddString + paceString
 
-sys.stdout.write(line1)
-sys.stdout.write(line2)
-sys.stdout.write(line3)
-sys.stdout.write(line4)
+		line4 = paceString +  "\r\n"
 
-		# self.lcd.write_string(line1)
-		# self.lcd.write_string(line2)
-		# self.lcd.write_string(line3)
-		# self.lcd.write_string(line4)
+		# sys.stdout.write(line1)
+		# sys.stdout.write(line2)
+		# sys.stdout.write(line3)
+		# sys.stdout.write(line4)
+
+		self.lcd.write_string(line1)
+		self.lcd.write_string(line2)
+		self.lcd.write_string(line3)
+		self.lcd.write_string(line4)
 	# def lcdTest1(self):
 	# 	#                 12345678911234567892
 	# 	self.lcd.write_string('D12.34   P+15:35  RS')
