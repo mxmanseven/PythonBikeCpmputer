@@ -11,31 +11,54 @@ class LcdManager:
     def __init__(self):
 		self.lcd = CharLCD('PCF8574', 0x27)
 
-    def setEnduroScreen(self, distance, paceTotalSeconds, routeSpeed, averageSpeed,timeTotalSeconds, milesToNextPossable, currentSpeed):
-		paceMinutes = int(paceTotalSeconds / 60)
-		paceSeconds = paceTotalSeconds % 60
+    def setEnduroScreen(self, distance, paceTotalSeconds, 
+		routeSpeed, averageSpeed,timeTotalSeconds, 
+		milesToNextPossable, currentSpeed):
+		
+		paceMinutes = int(abs(paceTotalSeconds / 60.0))
+		paceSeconds = int(abs(paceTotalSeconds % 60))
+		if paceTotalSeconds < 0:
+			paceMinutes = floor(abs(paceTotalSeconds / 60.0))
+			paceSeconds = int(abs(paceTotalSeconds) % 60)
+		
+		if paceMinutes > 10:
+			paceMinutes = 9
+			paceSeconds = 59
 
-		line1 = ("D{:5.2f}  P{: >+3d}:{:02d}  {:2.0f}\r\n".format(distance, paceMinutes, paceSeconds, routeSpeed))
+		paceSign = "+"
+		if paceTotalSeconds < 0:
+			paceSign = "-"
 
-		line2 = "{:19.0f}\r\n".format(averageSpeed)
+		sys.stdout.write('paceTotalSeconds ' + str(paceTotalSeconds) + '\r\n')
+		sys.stdout.write('paceMinutes ' + str(paceMinutes) + '\r\n')
+		sys.stdout.write('paceSeconds ' + str(paceSeconds) + '\r\n')
+		sys.stdout.write('\r\n')
 
-		timeMinutes = int(round(timeTotalSeconds / 60))
-		timeSeconds = timeTotalSeconds % 60
-		line3 = "T {:.0f}:{:02d} {:12.0f}\r\n".format(timeMinutes, timeSeconds, currentSpeed)
+		line1 = ("D{:5.2f}   P{}{:01.0f}:{:02d}   {:2.0f}\r\n"
+		.format(distance, paceSign, paceMinutes, paceSeconds, routeSpeed))
+
+		line2 = "{:20.0f}\r\n".format(averageSpeed)
+
+		timeMinutes = int(round(timeTotalSeconds / 60.0)) % 60
+		timeSeconds = int(round(timeTotalSeconds % 60))
+		
+		milesToNextPossableAdjusted = milesToNextPossable
+		if milesToNextPossable > 10:
+			milesToNextPossableAdjusted = 9.9
+
+		line3 = ("T {:02.0f}:{:02d}  NP{:4.1f} {:4.0f}\r\n"
+		.format(timeMinutes, timeSeconds, milesToNextPossableAdjusted, currentSpeed))
 
 		# knh todo - get rounding correct 
 
 		# always round away from zero
-		if paceTotalSeconds > 0:
-			paceMarkerCount = int(abs(ceil(paceTotalSeconds / 15)))
-		else:
-			paceMarkerCount = int(abs(floor(paceTotalSeconds / 15)))
-
+		paceMarkerCount = int(ceil(abs(paceTotalSeconds / 15)))
+			
 		# We will display at most 9 pace chars
 		if paceMarkerCount > 9:
 			paceMarkerCount = 9
 		# we have 20 chars, those that are not pace markers are spaces
-			paddCharCount = 20 - paceMarkerCount
+		paddCharCount = 20 - paceMarkerCount
 
 		# if we are ahead with positive paceTotalSeconds, use A
 		# if we are behaind with negative paceTotalSeconds, use B
@@ -51,11 +74,12 @@ class LcdManager:
 			paceString += paceMarkerChar
 
 		# build correct length padd string and place it on the correct side
+		#if paceTotalSeconds > 0:
 		if paceTotalSeconds > 0:
 			paddString = ""
-		for i in range(1, paddCharCount):
-			paddString += " "
-		paceString = paddString + paceString
+			for i in range(1, paddCharCount):
+				paddString += " "
+			paceString = paddString + paceString
 
 		line4 = paceString +  "\r\n"
 
@@ -63,7 +87,7 @@ class LcdManager:
 		# sys.stdout.write(line2)
 		# sys.stdout.write(line3)
 		# sys.stdout.write(line4)
-
+		self.lcd.clear()
 		self.lcd.write_string(line1)
 		self.lcd.write_string(line2)
 		self.lcd.write_string(line3)
