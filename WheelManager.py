@@ -24,7 +24,7 @@ class WheelManager:
         # set board GPIO pin 7 to input with a pull up resistor
         GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         # set interupt on pin 7 falling value and call newRawTick
-        # knh tod0 - tune bouncetime
+        # knh todo - tune bouncetime
         GPIO.add_event_detect(7, GPIO.FALLING, callback=self.newRawTick, bouncetime=300)
 
     def getSpeed(self, durrationSeconds=2, average=False):
@@ -45,8 +45,8 @@ class WheelManager:
             return 0
         elif (lastArrivalCount == 1):
             #knh todo - do math to find speed at 1 rev per maxSecondsBack
-            #  feet  per second (constant) => mph
-            return (self.wheelCircumferenceInches / maxSecondsBack) * 0.681818
+            #  17.6 inch  per second (constant) => 1 mph
+            return (float(self.wheelCircumferenceInches) / float(maxSecondsBack)) / 17.6
         elif (lastArrivalCount > 1):
             #knh todo - handle average case
             # get last two arrivals, find time span, find speed
@@ -54,8 +54,7 @@ class WheelManager:
             last = lastArrivals[length - 1]
             nextLast = lastArrivals[length - 2]
             timeSpanSeconds = abs(last - nextLast)
-            #knh todo do math to to get speed form time and distance
-            return (self.wheelCircumferenceInches / timeSpanSeconds) * 0.681818
+            return (float(self.wheelCircumferenceInches) / float(timeSpanSeconds)) / 17.6
         return -1
     
     def getLastTicksByTime(self, secondsBack):
@@ -79,10 +78,10 @@ class WheelManager:
             i -= 1
         return recientTicks
 
-    # knh todo fix calc
     def getTotalDistance(self):
         # knh todo - keep track of both ground miles and route miles 
-        return  self.validTickCount * self.wheelCircumferenceInches  
+        #63,360 inchs per Mile
+        return  (float(self.validTickCount) * float(self.wheelCircumferenceInches)) / 63360
 
     def newRawTick(self, chan):
         # knh todo - check for tick bounce
