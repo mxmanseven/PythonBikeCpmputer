@@ -5,16 +5,35 @@ from RPLCD.i2c import CharLCD
 
 import sys
 from math import ceil, floor
+from EnduroScreenModel import EnduroScreenModel
 
 class LcdManager:
 
     def __init__(self):
 		self.lcd = CharLCD('PCF8574', 0x27)
 
-    def setEnduroScreen(self, distance, paceTotalSeconds, 
-		routeSpeed, averageSpeed,timeTotalSeconds, 
-		milesToNextPossable, currentSpeed):
-		
+
+    def setEnduroScreenByModel(self, enduroScreenModel):
+        self.setEnduroScreen(
+            enduroScreenModel.distanceMiles, 
+            enduroScreenModel.milesToNextPossable,
+            enduroScreenModel.routeSpeed,
+            enduroScreenModel.averageSpeed,
+            enduroScreenModel.currentSpeed,
+            enduroScreenModel.timeTotalSeconds,
+            enduroScreenModel.paceTotalSeconds
+        )
+
+    def setEnduroScreen(
+		self, 
+		distance, 
+		milesToNextPossable,
+		routeSpeed, 
+		averageSpeed,  
+		currentSpeed,
+		timeTotalSeconds,
+		paceTotalSeconds):
+		# knh todo - limit speed to 2 digits
 		paceMinutes = int(abs(paceTotalSeconds / 60.0))
 		paceSeconds = int(abs(paceTotalSeconds % 60))
 		if paceTotalSeconds < 0:
@@ -52,7 +71,7 @@ class LcdManager:
 		# knh todo - get rounding correct 
 
 		# always round away from zero
-		paceMarkerCount = int(ceil(abs(paceTotalSeconds / 15)))
+		paceMarkerCount = int(ceil(abs(paceTotalSeconds / 15.0)))
 			
 		# We will display at most 9 pace chars
 		if paceMarkerCount > 9:
