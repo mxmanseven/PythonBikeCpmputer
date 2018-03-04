@@ -1,5 +1,5 @@
 
-import RPi.GPIO as GPIO
+
 from TimeService import TimeService
 
 
@@ -20,13 +20,6 @@ class WheelManager:
         # arrival time is based off of the timeService time
         self.validTicks = []
         
-        GPIO.setmode(GPIO.BOARD)
-        # set board GPIO pin 7 to input with a pull up resistor
-        GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        # set interupt on pin 7 falling value and call newRawTick
-        # knh todo - tune bouncetime
-        GPIO.add_event_detect(7, GPIO.FALLING, callback=self.newRawTick, bouncetime=300)
-
     def getSpeed(self, durrationSeconds=2, average=False):
         # Need at least two points of distance and time (ticks) to find speed
         # Need max time window to consider for determining speed
