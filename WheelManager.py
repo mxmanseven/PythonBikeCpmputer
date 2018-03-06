@@ -11,9 +11,9 @@ class WheelManager:
     # listens on gpio pin 7 for falling edge
     # knh todo - maybe main should be configuring gpio instead.
 
-    def __init__(self, wheelCircumferenceInches, timeScaleFactor=1):
+    def __init__(self, wheelCircumferenceInches, timeService):
         self.wheelCircumferenceInches = wheelCircumferenceInches
-        self.timeService = TimeService(timeScaleFactor)
+        self.timeService = timeService
         self.validTickCount = 0
         # validTicks is an array with the arrival time as the value
         # added in order of arrival.
